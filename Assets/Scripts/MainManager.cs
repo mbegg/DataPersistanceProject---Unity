@@ -18,6 +18,7 @@ public class MainManager : MonoBehaviour
     private int m_Points;
     
     private bool m_GameOver = false;
+    private bool newHighScore = false;
 
     
     // Start is called before the first frame update
@@ -67,6 +68,8 @@ public class MainManager : MonoBehaviour
             }
         }
 
+        UpdateBestScore(GameManager.Instance.playerName);
+
     }
 
     void AddPoint(int point)
@@ -77,12 +80,32 @@ public class MainManager : MonoBehaviour
 
     void UpdateBestScore()
     {
-        BestScoreText.text = $"Best Score: {GameManager.Instance.playerName} : {GameManager.Instance.bestScore}";
+        //update best score with the loaded data from GameManager singleton
+        BestScoreText.text = $"Best Score: {GameManager.Instance.highSoreName} : {GameManager.Instance.bestScore}";
+    }
+
+
+    void UpdateBestScore(string player)
+    {
+        //if we have a new highscorer update with the new player
+        if (m_Points > GameManager.Instance.bestScore)
+        {
+            BestScoreText.text = $"Best Score: {player} : {m_Points}";
+            newHighScore = true;
+            GameManager.Instance.bestScore = m_Points;
+            GameManager.Instance.highSoreName = player;
+        }
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        if(newHighScore)
+        {
+            GameManager.Instance.Save();
+        }
+
     }
 }
